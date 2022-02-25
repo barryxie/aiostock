@@ -1,0 +1,23 @@
+{% extends "search.html" %}
+
+{% block maincontent %}
+
+
+<div class="container-fluid market_news">
+    <div class="container"> 
+        <div class="row">
+            
+            {% for new in news %}
+            <div class="col">
+                <a href="{{ new['url'] }}" target="_blank">
+                    <img src="{{ new['image'] }}" class="img-fluid news_image">
+                    <h4 class="news_headline">{{ new["headline"] }}</h4>
+                    <p class="news_summary">{{ new["summary"] }}</p>
+                </a>    
+                </div>
+            {% endfor %}
+        </div>
+    </div>  
+</div>
+
+{% endblock%}

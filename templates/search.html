@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="/search" method="post">
+
+   
+        <div class="form-outline">
+            <i class="bi bi-search seach-icon"></i> 
+            <input type="search" name="search" id="search" class="form-control" />
+        </div>
+     
+</form>
+
+{% block maincontent %}
+{% endblock %}
+
+{% endblock%}

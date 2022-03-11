@@ -2,28 +2,30 @@
 
 {% block content %}
 <div class="container">
-<h1>{{ user.username }}</h1>
-<h3>Email</h3>
-<p>{{ user.email }}</p>
-<form method="POST">
+    <div class="row justify-content-center">
+            <div class="col-4">
+                <h1>{{ user.username }}</h1>
+                <h3>Email</h3>
+                <p>{{ user.email }}</p>
+                <form method="POST" action="/users/{{ user.username }}/updatepassword">
 
-    
-    {{ form.hidden_tag() }}
-    
+                    
+                    {{ form.hidden_tag() }}
+                    
 
-    {% for field in form if field.widget.input_type != 'hidden' %}
-    
-    <h3>{{field.label(class="col-form-label")}} </h3>
-    
-    <p>{{field(class="form-control")}}</p>
-     
-    
-   
-    {% endfor %}
-    <button class="btn btn-primary mt-3">Save</button>
-</form>
-
-
+                    {% for field in form if field.widget.input_type != 'hidden' %}
+                    
+                    <h3>{{field.label(class="col-form-label")}} </h3>
+                    
+                    <p>{{field(class="form-control")}}</p>
+                    
+                    
+                
+                    {% endfor %}
+                    <button class="btn btn-primary mt-3">Save</button>
+                </form>
+            </div>
+    </div>
 </div>
 
 

@@ -43,6 +43,15 @@ class User(db.Model):
         else:
             return False    
 
+    @classmethod
+    def newpassword(cls,newpassword):
+        """new password."""
+
+        hashed = bcrypt.generate_password_hash(newpassword)
+        hashed_utf8 = hashed.decode("utf8")
+        
+        return hashed_utf8       
+
 class Watchlist(db.Model):
     __tablename__ = "watchlists"
 

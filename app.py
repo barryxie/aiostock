@@ -1,10 +1,9 @@
 from crypt import methods
 from datetime import date
-from flask import Flask,render_template,jsonify,redirect,request, session
+from flask import Flask,render_template,jsonify,redirect,request, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import Watchlist, db, connect_db, User, Watchlist
-from form import EditUserForm, RegisterForm, LoginForm, addWatchlist
-import websocket
+from form import UpdatePasswordForm, RegisterForm, LoginForm, addWatchlist
 import requests
 
 
@@ -17,8 +16,7 @@ Finnhub_Token = "c8634eiad3i9fvjhud4g"
 Alphavantage_BASE_URL= "https://www.alphavantage.co/query?"
 Alphavantage_Token = "TNW6QY7M5DYFUG44"
 
-nasdaq_BASE_URL="https://data.nasdaq.com/api/v3/datasets/"
-nasdaq_Token="bxSDX_Ky18soSMbfvdK3"
+
 
 
 today = date.today()
@@ -59,7 +57,7 @@ def get_company_news(symbol):
 
 
 
-@app.route('/api/header')
+
 def get_header_value():
     data = []
     tickers = ["SPY","QQQ","DIA","SQQQ"]
@@ -68,26 +66,34 @@ def get_header_value():
         res_json = res.json()
         quote = {"symbol":ticker, "data": res_json}
         data.append(quote)
-    return jsonify(data)
+    return data
 
 @app.route('/api/<symbol>')
 def get_symbol(symbol):
     res = requests.get(f"{Finnhub_BASE_URL}quote?symbol={symbol}&token={Finnhub_Token}")
     ticker = res.json()
     return jsonify(ticker)
-
-@app.route('/api/users/<username>/watchlist')
-def get_users_watchlist(username):
-    watchlists = Watchlist.query.filter_by(username=username).all()
-    ticker = watchlists.json()
-    return jsonify(ticker)        
+  
 
 
 
 @app.route("/")
 def get_home():
     news = get_us_new(4)
-    return render_template('index.html', news=news)
+    cpi = requests.get("https://www.alphavantage.co/query?function=CPI&interval=monthly&apikey=demo")
+    cpi_data = cpi.json()
+    gdp = requests.get("https://www.alphavantage.co/query?function=REAL_GDP&interval=annual&apikey=demo")
+    gdp_data=gdp.json()
+    yield10 = requests.get("https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=monthly&maturity=10year&apikey=demo")
+    yield10_data=yield10.json()
+    unemployment_rate = requests.get("https://www.alphavantage.co/query?function=UNEMPLOYMENT&apikey=demo")
+    unemployment_rate_data=unemployment_rate.json()
+    tickers =get_header_value()
+
+    
+    
+
+    return render_template('index.html', news=news, cpi_data=cpi_data, gdp_data=gdp_data, yield10_data=yield10_data, unemployment_rate_data=unemployment_rate_data, tickers=tickers)
 
 @app.route("/search", methods=['POST'])
 def get_search():
@@ -96,6 +102,10 @@ def get_search():
 
 @app.route('/<symbol>')
 def get_company_overview(symbol):
+    tickers =get_header_value()
+    
+    
+
     res = requests.get(f'{Alphavantage_BASE_URL}function=OVERVIEW&symbol={symbol}&apikey={Alphavantage_Token}')
     # res = requests.get('https://www.alphavantage.co/query?function=OVERVIEW&symbol=IBM&apikey=demo')
     company = res.json()
@@ -104,19 +114,42 @@ def get_company_overview(symbol):
     data = requests.get(f"{Finnhub_BASE_URL}quote?symbol={symbol.upper()}&token={Finnhub_Token}")
     symbol_data = data.json()
 
+    if "username" in session:
+        if Watchlist.query.filter_by(symbol=symbol.upper(),username=session["username"]).first():
+            check_symbol = True
+           
+            return render_template('symbol.html', company=company, news=news, ticker=symbol_data,  tickers=tickers, check_symbol=check_symbol)
+        else:
+            check_symbol = False
+            
+            return render_template('symbol.html', company=company, news=news, ticker=symbol_data,  tickers=tickers, check_symbol=check_symbol)  
+             
+       
+    else: 
+        return render_template('symbol.html', company=company, news=news, ticker=symbol_data,  tickers=tickers)
+
+@app.route('/<symbol>/income-statement') 
+def get_income_statement(symbol):
+    if "username" not in session:
+        return redirect('/login') 
+    else:
+        res = requests.get(f'{Alphavantage_BASE_URL}function=INCOME_STATEMENT&symbol={symbol}&apikey={Alphavantage_Token}')
+        statements = res.json()
+        return render_template("incomestatement.html", statements=statements)
     
-    return render_template('symbol.html', company=company, news=news, ticker=symbol_data)
+
 
 @app.route("/register" , methods=['GET', 'POST']) 
 def register():
+    tickers =get_header_value()
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
         email = form.email.data
         phone = form.phone.data
-        first_name = ""
-        last_name = ""
+        first_name = form.first_name.data
+        last_name = form.last_name.data
 
         user = User.register(username,password,email,phone, first_name, last_name)
 
@@ -125,10 +158,11 @@ def register():
 
         return redirect('/')
     else:
-        return render_template('/users/register.html', form=form) 
+        return render_template('/users/register.html', form=form,  tickers=tickers) 
 
 @app.route("/login" , methods=['GET', 'POST']) 
 def login():
+    tickers =get_header_value()
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -139,52 +173,144 @@ def login():
             return redirect('/')
         else:
             form.username.errors = ["Invalid username/password."]
-            return render_template('users/login.html', form=form)    
+            return render_template('users/login.html', form=form, tickers=tickers)    
 
     else:
-        return render_template('users/login.html', form=form)         
+        return render_template('users/login.html', form=form, tickers=tickers)         
 
 @app.route("/logout")
 def logout():
     session.pop("username")
     return redirect('/') 
 
-@app.route('/users/<username>')
+@app.route('/users/<username>/')
 def user_info(username):
+    tickers =get_header_value()
     if "username" not in session:
-        return redirect('/users/login.html') 
+        return redirect('/login') 
 
     else:
         user = User.query.get_or_404(username) 
-        form = EditUserForm()
-    return render_template("/users/info.html", user = user, form= form)  
+        form = UpdatePasswordForm()
+        return render_template("/users/info.html", user = user, form= form, tickers=tickers)         
 
-@app.route('/users/<username>/watchlist',  methods=['GET', 'POST'])
-def user_watchlist(username):
+
+@app.route('/users/<username>/updatepassword', methods=['POST'])
+def update_password(username):
+    tickers =get_header_value()
     if "username" not in session:
-        return redirect('/users/login.html') 
+        return redirect('/login') 
 
     else:
+        user = User.query.get_or_404(username) 
+        form = UpdatePasswordForm()
+        if form.validate_on_submit():
+            username = session['username']
+            password = form.password.data
+            user = User.authenticate(username,password)
+            if user:
+                new_password = form.new_password.data
+                confirm_password = form.confirm_password.data
+                if new_password == confirm_password:
+                    newpassword = User.newpassword(new_password)
+                    user.password = newpassword
+                    db.session.commit()
+                    flash('Password updated')
+                    return redirect(f'/users/{username}')
+                else:
+                    flash('Password not match') 
+                    return redirect(f'/users/{username}')  
+            else:
+                flash("incorrent password, please try again")  
+                return redirect(f'/users/{username}')       
+
+
+     
+
+@app.route('/users/<username>/watchlist')
+def user_watchlist(username):
+    
+    
+    tickers =get_header_value()
+    if "username" not in session:
+        return redirect('/login') 
+
+    else:
+        
+       
         user = User.query.get_or_404(username) 
         form = addWatchlist()
         watchlists = Watchlist.query.filter_by(username=username).all()
-        return render_template("/users/watchlist.html", user = user, form=form, watchlists=watchlists)
+
+        data = []
+        for watchlist in watchlists:
+            res = requests.get(f"{Finnhub_BASE_URL}quote?symbol={watchlist.symbol}&token={Finnhub_Token}")
+            res_json = res.json()
+            quote = {"symbol":watchlist.symbol,"id":watchlist.id, "data": res_json}
+            data.append(quote)
+          
+        return render_template("/users/watchlist.html", user = user, form=form, watchlists=watchlists, data=data, tickers=tickers)
 
 @app.route('/users/<username>/watchlist/add',  methods=['POST'])
 def user_watchlist_add(username):
-    if "username" not in session:
-        return redirect('/users/login.html') 
+    if "username" not in session or username != session["username"]:
+        return redirect('/login') 
 
     else:
         
         form = addWatchlist()
         form.validate_on_submit()
         symbol = form.symbol.data
-        watchlist = Watchlist(username=username,symbol=symbol)
+        if Watchlist.query.filter_by(symbol=symbol,username=username).first():
+            flash("symbol already in your watchlist")
+            return redirect(f"/users/{username}/watchlist") 
+        else:
+            watchlist = Watchlist(username=username,symbol=symbol.upper() )
 
+            db.session.add(watchlist)
+            db.session.commit()
+            flash("Symbol has added")
+            return redirect(f"/users/{username}/watchlist")  
+            
+                 
+
+@app.route('/users/<username>/watchlist/<symbol>/add',  methods=['POST'])
+def user_watchlist_overview_add(username, symbol):
+    if "username" not in session or username != session["username"]:
+        return redirect('/login') 
+
+    else:
+        watchlist = Watchlist(username=username,symbol=symbol.upper() )
         db.session.add(watchlist)
         db.session.commit()
-        return redirect(f"/users/{username}/watchlist")     
+        return redirect(f"/{symbol}")                 
+
+@app.route('/users/<username>/watchlist/<symbol>/delete',  methods=['POST'])
+def user_watchlist_overview_delete(username, symbol):
+    if "username" not in session or username != session["username"]:
+        return redirect('/login') 
+
+    else:
+        watchlist = Watchlist.query.filter_by(symbol=symbol.upper(),username=session["username"]).first()
+        
+        db.session.delete(watchlist)
+        db.session.commit()
+        return redirect(f"/{symbol}")   
+        
+
+@app.route('/users/<username>/watchlist/<int:id>/delete',  methods=['POST'])
+def user_watchlist_delete(username, id):
+    if "username" not in session or username != session["username"]:
+        return redirect('/login') 
+
+    else:
+        watchlist = Watchlist.query.filter_by(id=id).first()
+        
+        db.session.delete(watchlist)
+        db.session.commit()
+             
+        return redirect(f"/users/{username}/watchlist")              
+                                         
                 
 
 

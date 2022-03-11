@@ -1,6 +1,35 @@
 {% extends "search.html" %}
 
 {% block maincontent %}
+<div class="container-fluid indicator-seaction">
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h5>{{gdp_data.name}}</h5>
+            {{gdp_data.data[0].date}}
+            <h3>{{gdp_data.data[0].value}}</h3>
+        </div>
+
+        <div class="col">
+            <h5>{{cpi_data.name}}</h5>
+            {{cpi_data.data[0].date}}
+            <h3>{{cpi_data.data[0].value}}</h3>
+        </div>
+
+        <div class="col">
+            <h5>{{yield10_data.name}}</h5>
+            {{yield10_data.data[0].date}}
+            <h3>{{yield10_data.data[0].value}}%</h3>
+        </div>
+
+        <div class="col">
+            <h5>{{unemployment_rate_data.name}}</h5>
+            {{unemployment_rate_data.data[0].date}}
+            <h3>{{unemployment_rate_data.data[0].value}}%</h3>
+        </div>
+    </div>
+</div>
+</div>
 
 
 <div class="container-fluid market_news">

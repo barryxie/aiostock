@@ -7,13 +7,15 @@ class RegisterForm(FlaskForm):
     password = PasswordField("Password", validators=[ InputRequired(), Length(min=6,max=55)])
     email = EmailField("Email", validators=[Email(),  InputRequired()])
     phone = IntegerField("Phone", validators=[ InputRequired()])
-
-
-class EditUserForm(FlaskForm):
-    phone = IntegerField("Phone", validators=[ InputRequired()]) 
     first_name = StringField("First name")
     last_name = StringField("Last name")
-    password = PasswordField("Password", validators=[ InputRequired(), Length(min=6,max=55)])   
+
+
+class UpdatePasswordForm(FlaskForm):
+    password = PasswordField("Current Password", validators=[ InputRequired(), Length(min=6,max=55)])
+    new_password = PasswordField("New Password", validators=[ InputRequired(), Length(min=6,max=55)])
+    confirm_password = PasswordField("Confirm Password", validators=[ InputRequired(), Length(min=6,max=55)])    
+       
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[ InputRequired(), Length(min=1,max=20)])

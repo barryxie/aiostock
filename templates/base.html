@@ -17,46 +17,55 @@
 <header class="container-fluid">
     <div class="row headdisplay">
        
-            
-           
-            
-            
-
-       
-    </div>
+       {% for ticker in tickers %}
+        <div class="col">
+          <div class="row">
+            <div class="col symbol">{{ ticker.symbol }}</div>
+            <div class="col price" id = "{{ ticker.symbol }}-PRICE-header">{{ ticker.data.c }}</div>
+          </div>
+          <div class="col different" id="{{ ticker.symbol }}-PRICE-different-header" data-pc="{{ ticker.data.pc}}">{{ ticker.data.dp }}</div>
+        </div>c
+       {% endfor %}
+     </div>
 
 </header>
-<nav class="navbar">
+
+<nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      
-      <ul class="navbar-nav">
+      <a class="navbar-brand" href="/">ALL IN ONE STOCK</a>
+      <div class="collapse navbar-collaps d-flex">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {% if 'username' in session %}
-        <li class="nav-item">
-          <a href="/users/{{ session['username'] }}">Hello: {{ session['username'] }}</a>
+        <li class="nav-item me-auto">
+          <a href="/users/{{ session['username'] }}"class="nav-link" >Hello: {{ session['username'] }}</a>
          </li>
          <li class="nav-item">
-          <a href="/users/{{ session['username'] }}/watchlist">My Watchlist</a>
+          <a href="/users/{{ session['username'] }}/watchlist" class="nav-link">My Watchlist</a>
          </li> 
         <li class="nav-item">
-          <a href="/logout">Logout</a>
+          <a href="/logout" class="nav-link">Logout</a>
          </li>
         {% else %} 
         <li class="nav-item">
-          <a href="/register">Register</a>
+          <a href="/register" class="nav-link">Register</a>
         </li>
         <li class="nav-item">
-          <a href="/login"> Login</a>
+          <a href="/login" class="nav-link"> Login</a>
          </li>
         {% endif %} 
-      </ul>
+        </ul>
+      </div>
     </div>
   </nav>
 
+  {% for msg in get_flashed_messages() %}
+        <div class="alert alert-info">{{ msg }}</div>
+  {% endfor %}
  
 {% block content %}
 {% endblock %}
 
-    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+ <script src="https://unpkg.com/axios/dist/axios.js"></script>
  <script src="/static/aiostock.js"></script>        
 </body>
 </html>

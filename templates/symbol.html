@@ -4,29 +4,53 @@
 
 <div class="container maincontent">
     
-    <div class="row">
-        <div class="col companyname">{{ company.Name }} <span id="company_Symbol">{{ company.Symbol }}</span>  </div>
-        
+    <div class="row companyname">
+        <div class="col-10">{{ company.Name }} <span id="company_Symbol">{{ company.Symbol }}</span>  </div>
+        {% if 'username' in session %}
+            <div class="col-2 start-btn-col">
+                {% if check_symbol == True %}
+                <form action="/users/{{session['username']}}/watchlist/{{ company.Symbol }}/delete" method="post"><button class="btn start-btn"><i class="bi bi-star-fill"></i></button></form>
+                {% else %}
+                <form action="/users/{{session['username']}}/watchlist/{{ company.Symbol }}/add" method="post"><button class="btn start-btn"><i class="bi bi-star"></i></button></form>
+                {% endif %}
+                
+            </div>
+            {% endif %}
+            
     </div>
 
     <div class="row">
-        <div class="col-4">
+        <div class="col-12 col-md-4">
             <p id="cp">${{ ticker.c }}</p>
             <p id="change"><span id="prinechange">{{ ticker.d }}</span> | {{ ticker.dp }}%</p>
             </div>
         
-        <div class="col-8">
-            <div class="row">
-                <div class="col-3 overview_table">Market Cap<br/><span>{{ company.MarketCapitalization }} </div>
+        <div class="col-12 col-md-8">
+            <div class="row px-2">
+                <div class="col-3 overview_table">Market Cap<br/><span class="market_cap">{{ company.MarketCapitalization }} </div>
                 <div class="col-3 overview_table">EPS<br/> <span>{{ company.EPS}} </div>
                 <div class="col-3 overview_table">PE Ratio<br/><span>{{ company.PERatio }} </div>
                 <div class="col-3 overview_table">PEG Ratio<br/><span>{{ company.PEGRatio}} </div>
+            </div>
+
+            <div class="row px-2">
                 <div class="col-3 overview_table">BookValue<br/><span>{{ company.BookValue }} </div>
                 <div class="col-3 overview_table">DividendYield}<br/><span>{{ company.DividendYield}} </div>
                 <div class="col-3 overview_table">52 Week High<br/><span>{{ company["52WeekHigh"] }} </div>
                 <div class="col-3 overview_table">52 Week Low<br/><span>{{ company["52WeekLow"] }}</span> </div>
             </div>
+
+            {% if 'username' in session %}
+            <div class="row">
+                <div class="col-3 overview_table"><a href="/{{ company.Symbol }}/income-statement" target="_blank"><button class="btn-sm btn-info">Income Statement</a> </button></div>
+                
+            </div>
+            {% endif %}
+            
+
         </div>
+
+
     </div>
 
     <div class="row company-bottom">
@@ -47,7 +71,7 @@
             <h2 class="hl">Company News</h2>
             {% for new in news %}
             <h4 class="news_headline"><a href="{{ new['url'] }}" target="_blank">{{ new['headline'] }}</a><br/>
-                <i>{{ new['source'] }} </i></p>
+                <p><i>{{ new['source'] }} </i></p></h4>
             
             {% endfor %}
 

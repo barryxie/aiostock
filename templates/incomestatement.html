@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h2 class="display-5 title">{{statements.symbol}}-Income statement</h2>
+    
+    <table class="table table-striped table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th align="left"></th>
+            {% for annualReport in statements.annualReports %}
+            <th align="right">{{annualReport.fiscalDateEnding}}</th>
+            {% endfor %}
+    
+            
+            
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Total Revenue (USD Mil)</th>
+                {% for annualReport in statements.annualReports %}
+                 <td class="mil">{{annualReport.totalRevenue}}</td>
+                 {% endfor %}
+            </tr>
+
+           <tr>
+               <th>Gross Profit </th>
+               {% for annualReport in statements.annualReports %}
+                <td class="mil">{{annualReport.grossProfit}}</td>
+                {% endfor %}
+           </tr>
+
+        
+
+        <tr>
+            <th>Cost Of Revenue</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.costOfRevenue}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Cost of Goods And Services Sold</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.costofGoodsAndServicesSold}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Operating Income</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.operatingIncome}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>selling General And Administrativ</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.sellingGeneralAndAdministrativ}}</td>
+             {% endfor %}
+        </tr>
+
+
+        <tr>
+            <th>R&D</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.researchAndDevelopment}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Operating Expenses</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.operatingExpenses}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Investment Income Net</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.investmentIncomeNet}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Net Interest Income</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.netInterestIncome}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Interest Income</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.interestIncome}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Interest Expense</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.interestExpense}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Non Interest Income</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.nonInterestIncome}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Other Non Operating Income</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.otherNonOperatingIncome}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Depreciation</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.depreciation}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Depreciation And Amortization</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.depreciationAndAmortization}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Income Before Tax</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.incomeBeforeTax}}</td>
+             {% endfor %}
+        </tr>
+
+
+        <tr>
+            <th>Income Tax Expense</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.incomeTaxExpense}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Interest And Debt Expense</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.interestAndDebtExpense}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Net Income From Continuing Operations</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.netIncomeFromContinuingOperations}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Comprehensive Income Net Of Tax</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.comprehensiveIncomeNetOfTax}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Ebit</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.ebit}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Ebitda</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.ebitda}}</td>
+             {% endfor %}
+        </tr>
+
+        <tr>
+            <th>Net Income</th>
+            {% for annualReport in statements.annualReports %}
+             <td class="mil">{{annualReport.netIncome}}</td>
+             {% endfor %}
+        </tr>
+
+        </tbody>
+      </table>
+   
+</div><!--container-->
+
+{% endblock%}
